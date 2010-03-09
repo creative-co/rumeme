@@ -118,10 +118,8 @@ end
 
 desc "Push gem to Gemcutter"
 task :push_gem do
-  system "echo '\n\n\033[31mRun: gem push #{gemspec.name}-#{gemspec.version}.gem\033[0m\n\n'"
-
-  #abort("not implemented yet")
-  #system("git push origin $(git tag | tail -1)")
+  system "echo '\n\n\033[31mPushing gem to gemcutter\033[0m\n\n'"
+  system "gem push pkg/#{gemspec.name}-#{gemspec.version}.gem"
 end
 
 desc 'release gem'
