@@ -70,5 +70,9 @@ module Rumeme
       message = (status != MessageStatus::NONE) || (line.length < idx + 2) ? "" : unescape(line[idx + 1 .. -1])
       return SmsReply.new(phone, message, message_id, when_, status)
     end
+
+    def delivery_report?
+      @status != MessageStatus::NONE
+    end
   end
 end
