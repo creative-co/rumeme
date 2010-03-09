@@ -90,7 +90,9 @@ Version #{version} - #{Date.today}
 EOF
   end
 
-  exec ["#{ENV["EDITOR"]} #{file}",
+  editor = ENV["EDITOR"] || 'kate'
+
+  exec ["#{editor} #{file}",
         "git commit -aqm '#{message}'",
         "git tag -a -m '#{message}' v#{version}",
         "echo '\n\n\033[32mMarked v#{version} /' `git show-ref -s refs/heads/master` 'for release.\033[0m\n\n'"].join(' && ')

@@ -1,0 +1,12 @@
+Version 0.1.1 - 2010-03-09
+===============================================================================
+
+antlypls (5):
+      fix bug "use_message_id always initialized as false.
+      add delivery_report? method
+      add usage section to readme file
+      update gitignore
+      add maintaince tasks to rake
+
+
+
