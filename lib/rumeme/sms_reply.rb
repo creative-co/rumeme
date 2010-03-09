@@ -1,5 +1,3 @@
-require 'message_status'
-
 module Rumeme
   # This class represents an SMS reply.
   class SmsReply

@@ -1,4 +1,3 @@
-require "sms_message"
 require "net/http"
 require "net/https"
 require 'rubygems'
