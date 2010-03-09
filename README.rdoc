@@ -1,4 +1,9 @@
 = RuMeMe
 Ruby SDK for Message Media SMS Gateway API.
 Since Message Media doesn't provide any ruby projects support, we decided to port it from available SDKs (mainly from PHP SDK; and some .NET usage). 
-For more information checkout {Message Media SMS APIs}[http://www.message-media.com/sms-gateway.html]
+For more information checkout {Message Media SMS APIs}[http://www.message-media.com/sms-gateway.html].
+
+= To Do
+* Refactoring to make api more rubyish.
+* Add unit tests
+* Extend documentation with Usage section.
