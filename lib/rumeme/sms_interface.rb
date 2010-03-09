@@ -29,7 +29,6 @@ module Rumeme
 
       @response_code = -1
       @response_message = nil
-      @use_message_id = false
       @message_list = []
       @http_connection = nil
       @http_proxy = nil
