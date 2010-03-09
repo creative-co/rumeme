@@ -92,7 +92,7 @@ EOF
 
   editor = ENV["EDITOR"] || 'kate'
 
-  exec ["#{editor} #{file}",
+  system ["#{editor} #{file}",
         "git commit -aqm '#{message}'",
         "git tag -a -m '#{message}' v#{version}",
         "echo '\n\n\033[32mMarked v#{version} /' `git show-ref -s refs/heads/master` 'for release.\033[0m\n\n'"].join(' && ')
@@ -118,7 +118,7 @@ end
 
 desc "Push gem to Gemcutter"
 task :push_gem do
-  system "echo '\n\n\033[41mRun: gem push #{gemspec.name}-#{gemspec.version}.gem\033[0m\n\n'"
+  system "echo '\n\n\033[31mRun: gem push #{gemspec.name}-#{gemspec.version}.gem\033[0m\n\n'"
 
   #abort("not implemented yet")
   #system("git push origin $(git tag | tail -1)")
@@ -129,6 +129,7 @@ task :release, :part do |t, args|
   Rake::Task['bump'].invoke(args[:part])
   Rake::Task['change'].invoke
   Rake::Task['push'].invoke
+  Rake::Task['gem'].invoke
   Rake::Task['push_gem'].invoke
 end
 
