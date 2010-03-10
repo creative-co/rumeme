@@ -21,7 +21,7 @@ module Rumeme
     # php suxx. reimplement using regex
     def self.parse line, use_message_id
       p "parsing line: #{line}. #{use_message_id}."
-      message_id = 0;
+      message_id = nil;
       status = MessageStatus::NONE
 
       prev_idx = 0;

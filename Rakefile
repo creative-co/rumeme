@@ -1,10 +1,19 @@
 require 'rake'
+require 'rake/testtask'
 require 'rake/gempackagetask'
 
 GEM_ROOT     = File.dirname(__FILE__).freeze
 VERSION_FILE = File.join(GEM_ROOT, 'lib', 'rumeme', 'version')
 
 require VERSION_FILE
+
+desc 'Test the rumeme gem'
+Rake::TestTask.new(:test) do |t|
+  t.libs << 'lib'
+  t.pattern = 'test/**/*_test.rb'
+  t.verbose = true
+end
+
 
 gemspec = Gem::Specification.new do |s|
   s.name        = 'rumeme'
