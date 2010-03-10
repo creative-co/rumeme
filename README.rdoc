@@ -38,3 +38,9 @@ Where xxxxxxxxxxx is phone number.
 = To Do
 * Refactoring to make api more rubyish.
 * Add unit tests
+
+= Credits
+RuMeMe is maintained by antlypls, and is funded by Programmable, LLC.
+
+= License
+Still looking for license. But the software is provided "as is", without warranty of any kind.
