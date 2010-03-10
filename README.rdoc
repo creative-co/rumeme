@@ -36,8 +36,9 @@ Then you can use SmsInterface class to add and send messages.
 Where xxxxxxxxxxx is phone number.
 
 = To Do
-* Refactoring to make api more rubyish.
-* Add unit tests
+* Refactoring to make api more rubyish,
+* Add unit tests,
+* Remove dependency to nokogiri
 
 = Credits
 RuMeMe is maintained by antlypls, and is funded by Programmable, LLC.
