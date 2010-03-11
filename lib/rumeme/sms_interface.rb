@@ -7,6 +7,7 @@ module Rumeme
 
   # This is the main class used to interface with the M4U SMS messaging server.
   class SmsInterface
+
     # allow_splitting, allow_long_messages, response_code, response_message, username, password, use_message_id, secure, http_connection, server_list, message_list,
     # http_proxy, http_proxy_port, http_proxy_auth, https_proxy, https_proxy_port, https_proxy_auth, text_buffer,
 
@@ -18,15 +19,13 @@ module Rumeme
     # The allowLongMessages parameter enables messages longer than 160
     # characters to be sent as special concatenated messages. For this
     # to take effect, the allowSplitting parameter must be set to false.
-
     def initialize
       @username = Rumeme.configuration.username
       @password = Rumeme.configuration.password
       @use_message_id = Rumeme.configuration.use_message_id
       @secure = Rumeme.configuration.secure
+      @long_messages_strategy = Rumeme.configuration.long_messages_strategy
       
-      @allow_splitting, @allow_long_messages = Rumeme.configuration.allow_splitting, Rumeme.configuration.allow_long_messages
-
       @response_code = -1
       @response_message = nil
       @message_list = []
@@ -70,58 +69,15 @@ module Rumeme
     attr_reader :response_message
 
     # Add a message to be sent.
-    def  add_message args
-      p 'in  add_message '
+    def add_message args
+      p 'in add_message '
       args[:phone_number] = strip_invalid(args[:phone_number]) #not good idea, modifying original args, from outer scope (antlypls)
 
       raise ArgumentError.new("phone_number is empty") if args[:phone_number].nil? || args[:phone_number].empty?
       raise ArgumentError.new("message is empty") if args[:message].nil? || args[:message].empty?
 
-      if args[:message].length <= 160
-        @message_list << SmsMessage.new(args)
-        return
-      end
-
-      if (@allow_long_messages) # Use concatenation.
-        args[:message] = args[:message][0..1071] # 1071??? WTF ??? see php code (antlypls)
-        @message_list << SmsMessage.new(args)
-        return
-      end
-
-      if !@allow_splitting
-        args[:message] = args[:message][0..160] # maybe 159 ? (antlypls)
-        @message_list << SmsMessage.new(args)
-        return
-      end
-
-      ml = []
-      maxlen = 152
-      message_text = args[:message]
-      while message_text.length > maxlen
-        if (pos = message_text[0..maxlen].rindex(" ")) == 0
-          pos = maxlen - 1
-        end
-
-        ml << message_text[0..pos+1]
-        message_text = message_text[pos + 1 .. -1]
-        maxlen = 147;
-      end
-      ml << message_text
-
-      ml.each_index {|i|
-        ni = i + 1
-        if (i == 0)
-          m = ml[i]
-        else
-          m = "(#{ni}/#{ml.size})#{ml[i]}"
-        end
-
-        if (ni != ml.size )
-          m << "...(#{ni}/#{ml.size})"
-        end
-
-        @message_list << SmsMessage.new(args.merge({:message => m, :delay => args[:delay] + 30*i}))
-      }
+      messages = process_long_message(args[:message])
+      @message_list.concat(messages.map{|m| SmsMessage.new(args.merge({:message => m}))})
     end
 
     # Clear all the messages from the list.
@@ -249,6 +205,47 @@ module Rumeme
 
     private
 
+    def process_long_message message
+      return [message] if message.length <= 160
+      case @long_messages_strategy
+        when :send
+          [message]
+        when :cut
+          [message[0..160]]
+        when :split
+          SmsInterface.split_message message
+        else
+          raise 'unknown long_messages_strategy'
+      end
+    end
+
+    def self.split_message message
+      messages = split_message_internal message
+      i = 1
+      ["#{messages[0]}...(1/#{messages.size})"].concat(messages[1..-1].map {|m| "(#{i+=1}/#{messages.size})#{m}"})
+    end
+
+    def self.split_message_internal message
+      list =[]
+
+      head, message = head_tail_split(message, 152)
+      list << head
+
+      while !message.nil? do
+        head, message = head_tail_split(message, 155)
+        list << head
+      end
+
+      list
+    end
+
+    def self.head_tail_split message, max_len
+      return [message, nil] if message.length < max_len
+      pattern = /\s\.,!;:-\)/
+      index = message[0..max_len].rindex(pattern) || max_len
+      [message[0..index], message[index+1 .. -1]]
+    end
+
     # Strip invalid characters from the phone number.
     def strip_invalid phone
       return if phone.nil?
@@ -296,7 +293,6 @@ module Rumeme
         p "error: #{$!}"
         return false
       end
-
 
       if resp.code.to_i != 200
         p 'http response code != 200'
