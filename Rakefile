@@ -27,6 +27,7 @@ gemspec = Gem::Specification.new do |s|
   s.rdoc_options = ['--line-numbers', "--main", "README.rdoc"]
 
   s.add_runtime_dependency('nokogiri', '1.4.1')
+  s.add_development_dependency("shoulda")
 
   s.authors = ['antlypls']
   s.email   = 'antlypls@gmail.com'
