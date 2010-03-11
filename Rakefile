@@ -132,12 +132,12 @@ task :push_gem do
   system "gem push pkg/#{gemspec.name}-#{gemspec.version}.gem"
 end
 
-desc 'release gem'
-task :release, :part do |t, args|
+desc 'Preparing release'
+task :prepare_release, :part do |t, args|
   Rake::Task['bump'].invoke(args[:part])
   Rake::Task['change'].invoke
   Rake::Task['push'].invoke
-  Rake::Task['gem'].invoke
-  Rake::Task['push_gem'].invoke
 end
 
+desc 'Building and publishing gem'
+task :publish_release => [:gem, :push_gem]
