@@ -70,28 +70,33 @@ module Rumeme
     attr_reader :response_message
 
     # Add a message to be sent.
-    def  add_message phone, message_text, message_id = 0, delay = 0, validity_period = 169, delivery_report = false
+    def  add_message args
       p 'in  add_message '
-      phone = strip_invalid(phone);
-      return if phone.empty?
+      args[:phone_number] = strip_invalid(args[:phone_number]) #not good idea, modifying original args, from outer scope (antlypls)
 
-      if message_text.length <= 160
-        @message_list << SmsMessage.new(phone, message_text, message_id, delay, validity_period, delivery_report)
+      raise ArgumentError.new("phone_number is empty") if args[:phone_number].nil? || args[:phone_number].empty?
+      raise ArgumentError.new("message is empty") if args[:message].nil? || args[:message].empty?
+
+      if args[:message].length <= 160
+        @message_list << SmsMessage.new(args)
         return
       end
 
       if (@allow_long_messages) # Use concatenation.
-        @message_list << SmsMessage.new(phone, message_text[0..1071], message_id, delay, validity_period, delivery_report) # 1071??? WTF ??? see php code
+        args[:message] = args[:message][0..1071] # 1071??? WTF ??? see php code (antlypls)
+        @message_list << SmsMessage.new(args)
         return
       end
 
       if !@allow_splitting
-        @message_list << SmsMessage.new(phone, message_text[0..160], message_id, delay, validity_period, delivery_report)
+        args[:message] = args[:message][0..160] # maybe 159 ? (antlypls)
+        @message_list << SmsMessage.new(args)
         return
       end
 
       ml = []
-      maxlen = 152;
+      maxlen = 152
+      message_text = args[:message]
       while message_text.length > maxlen
         if (pos = message_text[0..maxlen].rindex(" ")) == 0
           pos = maxlen - 1
@@ -115,7 +120,7 @@ module Rumeme
           m << "...(#{ni}/#{ml.size})"
         end
 
-        @message_list << SmsMessage.new(phone, m, message_id, delay + 30*i, validity_period, delivery_report)
+        @message_list << SmsMessage.new(args.merge({:message => m, :delay => args[:delay] + 30*i}))
       }
     end
 
@@ -246,6 +251,7 @@ module Rumeme
 
     # Strip invalid characters from the phone number.
     def strip_invalid phone
+      return if phone.nil?
       "+#{phone.gsub(/[^0-9]/, '')}"
     end
 

@@ -5,6 +5,7 @@ module Rumeme
 
     # Constructor.
     def initialize args
+      # this defaults must be moved to global configuration
       defaults = {:phone_number => nil, :message => nil, :message_id => 0, :delay => 0, :validity_period => ValidityPeriod::THREE_DAYS, :delivery_report => false}
       params = defaults.merge args
       defaults.keys.each {|k| instance_variable_set("@#{k.to_s}".to_sym, params[k])}
