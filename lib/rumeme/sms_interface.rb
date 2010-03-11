@@ -97,6 +97,14 @@ module Rumeme
       end
     end
 
+    def open_server_connection2 server, secure
+      port, use_ssl = secure ? [443, true] : [80, false]
+
+      http_connection =  Net::HTTP.new(server, port)
+      http_connection.use_ssl = use_ssl
+      http_connection
+    end
+
     # 4 php api compatibility, returns response code from latest http flush
     def read_response_code
       @latest_response_code
@@ -110,19 +118,13 @@ module Rumeme
 
     # Return the list of replies we have received.
     def check_replies auto_confirm = true
-      connect
       p 'in check_replies'
-      @text_buffer << "CHECKREPLY2.0\r\n.\r\n"
 
-      if (!flush_buffer || read_response_code != 150)
-        close
-        return
-      end
+      response_message, response_code = post_data_to_server("CHECKREPLY2.0\r\n.\r\n")
+      return if response_code != 150
 
-      p @response_message
-      messages = @response_message.split("\r\n")[1..-2].map{|message_line| SmsReply.parse(message_line, @use_message_id)}
-
-      close
+      p response_message
+      messages = response_message.split("\r\n")[1..-2].map{|message_line| SmsReply.parse(message_line, @use_message_id)}
 
       if auto_confirm && messages.size > 0
         confirm_replies_received
@@ -133,35 +135,18 @@ module Rumeme
 
     # sends confirmation to server
     def confirm_replies_received
-      connect
       p 'in confirm_replies_received'
-      return nil if @http_connection.nil?
-      ok = true
-
-      @text_buffer << "CONFIRM_RECEIVED\r\n.\r\n"
-      if !flush_buffer
-        ok = false
-      end
-
-      close
-      p "result: #{ok}"
-      
-      return ok
+      post_data_to_server "CONFIRM_RECEIVED\r\n.\r\n"
     end
 
     # Returns the credits remaining (for prepaid users only).
     def get_credits_remaining
-      connect
-      return -2 if @http_connection.nil?
-      @text_buffer << "MESSAGES\r\n.\r\n"
+      p 'in get_credits_remaining'
 
-      if (!flush_buffer)
-        close
-        return -2
-      end
+      response_message, response_code = post_data_to_server("MESSAGES\r\n.\r\n")
 
       if response_message =~ /^(\d+)\s+OK\s+(\d+).+/
-        if $1.to_i != 100
+        if response_code != 100
           p 'M4U code is not 100'
           return -1
         end
@@ -175,25 +160,19 @@ module Rumeme
     # Sends all the messages that have been added with the
     # add_message command.
     def send_messages
-      connect
-      return false if @http_connection.nil?
-      @text_buffer << "MESSAGES2.0\r\n"
+      text_buffer = "MESSAGES2.0\r\n"
 
       @message_list.each {|sm|
         s = "#{sm.message_id} #{sm.phone_number} #{sm.delay} #{sm.validity_period} "
         s << (sm.delivery_report ? "1 " : "0 ")
         s << "#{sm.message}\r\n"
-        @text_buffer << s
+        text_buffer << s
       }
+      text_buffer << ".\r\n"
 
-      ok = true
-      @text_buffer << ".\r\n"
-      if (!flush_buffer || (read_response_code / 100) != 1)
-        ok = false
-      end
+      response_message, response_code = post_data_to_server(text_buffer)
 
-      close
-      return ok
+      return response_code == 100 ? true : false
     end
 
     private
@@ -267,6 +246,8 @@ module Rumeme
     end
 
     # Flush the text buffer to the HTTP connection.
+=begin
+
     def flush_buffer
       p 'in flush_buffer'
       p "buffer: #{@text_buffer}"
@@ -306,6 +287,62 @@ module Rumeme
 
       @text_buffer = ''
       return true
+    end
+
+=end
+
+    def post_data_to_server data
+      p 'post_data_to_server'
+      #connect
+      #flush
+      #close
+
+      http_connection = open_server_connection2(@server_list[0], @secure)
+
+      text_buffer = "m4u\r\nUSER=#{@username}"
+      if @use_message_id
+        text_buffer << "#"
+      end
+      text_buffer << "\r\nPASSWORD=#{@password}\r\nVER=PHP1.0\r\n"
+
+      text_buffer << data
+
+      p "buffer: #{text_buffer}"
+      headers = {
+              'Content-Length' => text_buffer.length.to_s
+      }
+
+      path = '/'
+
+      begin
+        resp, data = http_connection.post(path, text_buffer, headers)
+        p resp.inspect
+        p data.inspect
+      rescue
+        p "error: #{$!}"
+        return false
+      end
+
+      if resp.code.to_i != 200
+        p 'http response code != 200'
+        return false
+      end
+
+      @latest_response_code = @response_code = resp.code.to_i
+
+      doc = Nokogiri::HTML(data)
+
+      return false if doc.xpath('//title').text != "M4U SMSMASTER"
+
+      @response_message = @latest_response = doc.xpath('//body').text.strip
+      if @response_message =~ /^(\d+)\s+/
+        @latest_response_code = @response_code = $1.to_i
+      end
+
+      p "latest response code: #{ @latest_response_code}"
+      p "response #{@response_message.inspect}"
+
+      [@response_message, @response_code]
     end
   end
 end
