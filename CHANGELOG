@@ -1,3 +1,13 @@
+Version 0.1.2 - 2010-03-11
+===============================================================================
+
+antlypls (14):
+      change SmsMessage class constructor parameters to hash
+      modify sms interface to reflect sms message changes
+      minor changes
+      update readme
+
+
 Version 0.1.1 - 2010-03-09
 ===============================================================================
 
@@ -7,6 +17,7 @@ antlypls (5):
       add usage section to readme file
       update gitignore
       add maintaince tasks to rake
+
 
 
 
