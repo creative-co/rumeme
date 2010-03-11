@@ -34,7 +34,7 @@ module Rumeme
       @http_proxy_port = 80
       @http_proxy_auth = nil
       @https_proxy = nil
-      @https_proxy_port = 443;
+      @https_proxy_port = 443
       @https_proxy_auth = nil
       @text_buffer = nil
       @server_list = ["smsmaster.m4u.com.au", "smsmaster1.m4u.com.au", "smsmaster2.m4u.com.au"]
@@ -92,14 +92,9 @@ module Rumeme
       if secure
         @http_connection =  Net::HTTP.new(server, 443)
         @http_connection.use_ssl = true
-
       else
         @http_connection =  Net::HTTP.new(server, 80)
       end
-
-      p @http_connection.inspect
-
-      @http_connection.nil? ? false : true
     end
 
     # 4 php api compatibility, returns response code from latest http flush
@@ -117,16 +112,14 @@ module Rumeme
     def check_replies auto_confirm = true
       connect
       p 'in check_replies'
-      return nil if @http_connection.nil?
       @text_buffer << "CHECKREPLY2.0\r\n.\r\n"
 
       if (!flush_buffer || read_response_code != 150)
         close
-        return nil
+        return
       end
 
       p @response_message
-
       messages = @response_message.split("\r\n")[1..-2].map{|message_line| SmsReply.parse(message_line, @use_message_id)}
 
       close
@@ -145,7 +138,7 @@ module Rumeme
       return nil if @http_connection.nil?
       ok = true
 
-      @text_buffer << "CONFIRM_RECEIVED\r\n.\r\n";
+      @text_buffer << "CONFIRM_RECEIVED\r\n.\r\n"
       if !flush_buffer
         ok = false
       end
@@ -153,7 +146,7 @@ module Rumeme
       close
       p "result: #{ok}"
       
-      return ok;
+      return ok
     end
 
     # Returns the credits remaining (for prepaid users only).
@@ -189,14 +182,14 @@ module Rumeme
       @message_list.each {|sm|
         s = "#{sm.message_id} #{sm.phone_number} #{sm.delay} #{sm.validity_period} "
         s << (sm.delivery_report ? "1 " : "0 ")
-        s << "#{sm.message}\r\n";
+        s << "#{sm.message}\r\n"
         @text_buffer << s
       }
 
       ok = true
-      @text_buffer << ".\r\n";
+      @text_buffer << ".\r\n"
       if (!flush_buffer || (read_response_code / 100) != 1)
-        ok = false;
+        ok = false
       end
 
       close
@@ -261,18 +254,16 @@ module Rumeme
                                                                             # does not connect to server, just creates http object,
                                                                             # so we can't check availability of the server at this moment (antlypls)
 
-      return if @http_connection.nil?
-
       @text_buffer = "m4u\r\nUSER=#{@username}"
       if @use_message_id
         @text_buffer << "#"
       end
-      @text_buffer << "\r\nPASSWORD=#{@password}\r\nVER=PHP1.0\r\n";
+      @text_buffer << "\r\nPASSWORD=#{@password}\r\nVER=PHP1.0\r\n"
     end
 
     # only for php compatibility, just free object reference
     def close
-      @http_connection = nil unless @http_connection.nil?
+      @http_connection = nil
     end
 
     # Flush the text buffer to the HTTP connection.
