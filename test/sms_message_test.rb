@@ -32,8 +32,26 @@ class SmsMessageTest < Test::Unit::TestCase
       assert_equal 0, sms.delay
       assert_equal ValidityPeriod::THREE_DAYS, sms.validity_period
       assert_equal false, sms.delivery_report
-
     end
 
+    should "raise ArgumentError if phone number is not provided" do
+      e = assert_raise(ArgumentError) { SmsMessage.new :message => "qwertasdfzxcv" }
+      assert_match(/phone_number is empty/, e.message)
+    end
+
+    should "raise ArgumentError if phone number is empty" do
+      e = assert_raise(ArgumentError) { SmsMessage.new :phone_number => "", :message => "qwertasdfzxcv" }
+      assert_match(/phone_number is empty/, e.message)
+    end
+
+    should "raise ArgumentError if message is not provided" do
+      e = assert_raise(ArgumentError) { SmsMessage.new :phone_number => "12345678901" }
+      assert_match(/message is empty/, e.message)
+    end
+    
+    should "raise ArgumentError if message is empty" do
+      e = assert_raise(ArgumentError) { SmsMessage.new :phone_number => "12345678901", :message => "" }
+      assert_match(/message is empty/, e.message)
+    end
   end
 end

@@ -9,8 +9,8 @@ module Rumeme
       params = defaults.merge args
       defaults.keys.each {|k| instance_variable_set("@#{k.to_s}".to_sym, params[k])}
 
-      raise ArgumentError.new("phone_number is nil") if @phone_number.nil?
       raise ArgumentError.new("phone_number is empty") if @phone_number.nil? || @phone_number.empty?
+      raise ArgumentError.new("message is empty") if @message.nil? || @message.empty?
 
       @message = @message.gsub("\n",'\n').gsub("\r",'\r').gsub("\\",'\\\\')
     end
