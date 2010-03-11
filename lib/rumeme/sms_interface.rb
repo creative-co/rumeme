@@ -29,7 +29,6 @@ module Rumeme
       @response_code = -1
       @response_message = nil
       @message_list = []
-      @http_connection = nil
       @http_proxy = nil
       @http_proxy_port = 80
       @http_proxy_auth = nil
@@ -60,14 +59,6 @@ module Rumeme
       raise 'proxy is not supported'
     end
 
-    # Return the response code received from calls to
-    # changePassword, getCreditsRemaining, sendMessages, and
-    # checkReplies.
-    attr_reader :response_code
-
-    # Return the message that was returned with the response code.
-    attr_reader :response_message
-
     # Add a message to be sent.
     def add_message args
       p 'in add_message '
@@ -85,29 +76,13 @@ module Rumeme
       @message_list.clear
     end
 
-    # Open a connection to the specified server.
-    # proxy is not supported
     def open_server_connection server, secure
-      p "in open_server_connection: #{server} #{secure}"
-      if secure
-        @http_connection =  Net::HTTP.new(server, 443)
-        @http_connection.use_ssl = true
-      else
-        @http_connection =  Net::HTTP.new(server, 80)
-      end
-    end
-
-    def open_server_connection2 server, secure
       port, use_ssl = secure ? [443, true] : [80, false]
 
       http_connection =  Net::HTTP.new(server, port)
+      http_connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
       http_connection.use_ssl = use_ssl
       http_connection
-    end
-
-    # 4 php api compatibility, returns response code from latest http flush
-    def read_response_code
-      @latest_response_code
     end
 
     # Change the password on the local machine and server.
@@ -123,12 +98,8 @@ module Rumeme
       response_message, response_code = post_data_to_server("CHECKREPLY2.0\r\n.\r\n")
       return if response_code != 150
 
-      p response_message
       messages = response_message.split("\r\n")[1..-2].map{|message_line| SmsReply.parse(message_line, @use_message_id)}
-
-      if auto_confirm && messages.size > 0
-        confirm_replies_received
-      end
+      confirm_replies_received if auto_confirm && messages.size > 0
 
       return messages
     end
@@ -224,80 +195,10 @@ module Rumeme
       "+#{phone.gsub(/[^0-9]/, '')}"
     end
 
-    # Connect to the M4U server
-    def connect
-      p 'in connect'
-      return unless @http_connection.nil?
-
-      @server_list.all? {|server| !open_server_connection(server, @secure)} # unusefull code open_server_connection,
-                                                                            # does not connect to server, just creates http object,
-                                                                            # so we can't check availability of the server at this moment (antlypls)
-
-      @text_buffer = "m4u\r\nUSER=#{@username}"
-      if @use_message_id
-        @text_buffer << "#"
-      end
-      @text_buffer << "\r\nPASSWORD=#{@password}\r\nVER=PHP1.0\r\n"
-    end
-
-    # only for php compatibility, just free object reference
-    def close
-      @http_connection = nil
-    end
-
-    # Flush the text buffer to the HTTP connection.
-=begin
-
-    def flush_buffer
-      p 'in flush_buffer'
-      p "buffer: #{@text_buffer}"
-      headers = {
-              'Content-Length' => @text_buffer.length.to_s
-      }
-
-      path = '/'
-
-      begin
-        resp, data = @http_connection.post(path, @text_buffer, headers)
-        p resp.inspect
-        p data.inspect
-      rescue
-        p "error: #{$!}"
-        return false
-      end
-
-      if resp.code.to_i != 200
-        p 'http response code != 200'
-        return false
-      end
-
-      @latest_response_code = @response_code = resp.code.to_i
-
-      doc = Nokogiri::HTML(data)
-
-      return false if doc.xpath('//title').text != "M4U SMSMASTER"
-
-      @response_message = @latest_response = doc.xpath('//body').text.strip
-      if @response_message =~ /^(\d+)\s+/
-        @latest_response_code = @response_code = $1.to_i
-      end
-
-      p "latest response code: #{ @latest_response_code}"
-      p "response #{@response_message.inspect}"
-
-      @text_buffer = ''
-      return true
-    end
-
-=end
-
     def post_data_to_server data
       p 'post_data_to_server'
-      #connect
-      #flush
-      #close
 
-      http_connection = open_server_connection2(@server_list[0], @secure)
+      http_connection = open_server_connection(@server_list[0], @secure)
 
       text_buffer = "m4u\r\nUSER=#{@username}"
       if @use_message_id
@@ -308,9 +209,7 @@ module Rumeme
       text_buffer << data
 
       p "buffer: #{text_buffer}"
-      headers = {
-              'Content-Length' => text_buffer.length.to_s
-      }
+      headers = {'Content-Length' => text_buffer.length.to_s}
 
       path = '/'
 
@@ -328,21 +227,20 @@ module Rumeme
         return false
       end
 
-      @latest_response_code = @response_code = resp.code.to_i
-
       doc = Nokogiri::HTML(data)
 
       return false if doc.xpath('//title').text != "M4U SMSMASTER"
 
-      @response_message = @latest_response = doc.xpath('//body').text.strip
-      if @response_message =~ /^(\d+)\s+/
-        @latest_response_code = @response_code = $1.to_i
+      response_message = doc.xpath('//body').text.strip
+      response_code = nil
+      if response_message =~ /^(\d+)\s+/
+        response_code = $1.to_i
       end
 
-      p "latest response code: #{ @latest_response_code}"
-      p "response #{@response_message.inspect}"
+      p "latest response code: #{response_code}"
+      p "response #{response_message }"
 
-      [@response_message, @response_code]
+      [response_message, response_code]
     end
   end
 end
