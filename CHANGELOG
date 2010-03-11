@@ -1,3 +1,14 @@
+Version 0.1.3 - 2010-03-11
+===============================================================================
+
+antlypls (5):
+      fix rake file
+      change long messages settings
+      minor code cleanup
+      refactor internals
+      code cleanup
+
+
 Version 0.1.2 - 2010-03-11
 ===============================================================================
 
@@ -17,6 +28,7 @@ antlypls (5):
       add usage section to readme file
       update gitignore
       add maintaince tasks to rake
+
 
 
 
