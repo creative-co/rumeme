@@ -260,7 +260,9 @@ module Rumeme
       p 'in connect'
       return unless @http_connection.nil?
 
-      @server_list.all? {|server| !open_server_connection(server, @secure)} #unusefull code open_server_connection, do not connetct to server, just creates http object, so we can't check availability of the server
+      @server_list.all? {|server| !open_server_connection(server, @secure)} # unusefull code open_server_connection,
+                                                                            # does not connect to server, just creates http object,
+                                                                            # so we can't check availability of the server at this moment (antlypls)
 
       return if @http_connection.nil?
 
@@ -271,11 +273,9 @@ module Rumeme
       @text_buffer << "\r\nPASSWORD=#{@password}\r\nVER=PHP1.0\r\n";
     end
 
-    # only 4 php compatibility, just free object reference
+    # only for php compatibility, just free object reference
     def close
-      return if @http_connection.nil?
-      #@http_connection.finish
-      @http_connection = nil
+      @http_connection = nil unless @http_connection.nil?
     end
 
     # Flush the text buffer to the HTTP connection.
