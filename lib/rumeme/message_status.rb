@@ -7,5 +7,3 @@ module Rumeme
     FAILED = 3
   end
 end
-
-

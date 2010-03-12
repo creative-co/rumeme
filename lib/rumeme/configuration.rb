@@ -20,4 +20,3 @@ module Rumeme
     end
   end
 end
-
