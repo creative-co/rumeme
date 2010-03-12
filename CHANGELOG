@@ -1,3 +1,11 @@
+Version 0.1.6 - 2010-03-12
+===============================================================================
+
+antlypls (2):
+      code cleanup
+      code cleanup
+
+
 Version 0.1.5 - 2010-03-12
 ===============================================================================
 
@@ -44,6 +52,7 @@ antlypls (5):
       add usage section to readme file
       update gitignore
       add maintaince tasks to rake
+
 
 
 
