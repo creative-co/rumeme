@@ -5,6 +5,7 @@ module Rumeme
     attr_accessor :password
     attr_accessor :use_message_id
     attr_accessor :secure
+    attr_accessor :replies_auto_confirm
 
     #
     # possible values
@@ -12,6 +13,10 @@ module Rumeme
     # :split - splits messages into small (less than 160 ch) messages
     # :cut - sends only first 160 symbols 
     attr_accessor :long_messages_strategy
+
+    def initialize
+      @replies_auto_confirm = true
+    end
   end
 end
 

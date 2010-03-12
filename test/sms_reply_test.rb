@@ -11,7 +11,7 @@ include Rumeme
 class SmsReplyTest < Test::Unit::TestCase
   context "SmsReply.parse method (for reply with id)" do
     setup do
-      @sms_reply = SmsReply.parse("12 79270123456 100 asdfgh", true)
+      @sms_reply = SmsReply.parse("12 79270123456 100 asdfgh")
     end
 
     should "correctly parse message id" do
@@ -37,7 +37,7 @@ class SmsReplyTest < Test::Unit::TestCase
 
   context "SmsReply.parse method (for reply without id)" do
     setup do
-      @sms_reply = SmsReply.parse("79270123456 100 asdfgh", false)
+      @sms_reply = SmsReply.parse("79270123456 100 asdfgh")
     end
 
     should "assign nil for message id" do
@@ -63,7 +63,7 @@ class SmsReplyTest < Test::Unit::TestCase
 
   context "SmsReply.parse method (for delivery report: pending)" do
     setup do
-      @sms_reply = SmsReply.parse("12 1 100", true)
+      @sms_reply = SmsReply.parse("12 1 100")
     end
 
     should "correctly parse message id" do
@@ -81,7 +81,7 @@ class SmsReplyTest < Test::Unit::TestCase
 
   context "SmsReply.parse method (for delivery report: pending)" do
     should "raise ArgumentError if incorrect string passed into" do
-      e = assert_raise(ArgumentError) { SmsReply.parse("jzxhcjkvhiusdfyhg", true) }
+      e = assert_raise(ArgumentError) { SmsReply.parse("jzxhcjkvhiusdfyhg") }
       assert_match(/can't parse line: jzxhcjkvhiusdfyhg/, e.message)
     end
   end
