@@ -8,7 +8,7 @@ module Rumeme
       # this defaults must be moved to global configuration
       defaults = {:phone_number => nil, :message => nil, :message_id => 0, :delay => 0, :validity_period => ValidityPeriod::THREE_DAYS, :delivery_report => false}
       params = defaults.merge args
-      defaults.keys.each {|k| instance_variable_set("@#{k.to_s}".to_sym, params[k])}
+      defaults.keys.each {|key| instance_variable_set("@#{key.to_s}".to_sym, params[key])}
 
       raise ArgumentError.new("phone_number is empty") if @phone_number.nil? || @phone_number.empty?
       raise ArgumentError.new("message is empty") if @message.nil? || @message.empty?
