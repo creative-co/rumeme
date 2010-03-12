@@ -15,5 +15,9 @@ module Rumeme
 
       @message = @message.gsub("\n",'\n').gsub("\r",'\r').gsub("\\",'\\\\')
     end
+    
+    def post_string
+      "#{@message_id} #{@phone_number} #{@delay} #{@validity_period} #{@delivery_report ? 1 : 0} #{@message}\r\n"
+    end
   end
 end

@@ -16,6 +16,7 @@ module Rumeme
 
     def initialize
       @replies_auto_confirm = true
+      @long_messages_strategy = :send
     end
   end
 end
