@@ -56,7 +56,7 @@ class SmsReplyTest < Test::Unit::TestCase
       assert_equal 'asdfgh', @sms_reply.message
     end
 
-    should "assign NONE status " do
+    should "assign NONE status" do
       assert_equal MessageStatus::NONE, @sms_reply.status
     end
   end
@@ -74,8 +74,16 @@ class SmsReplyTest < Test::Unit::TestCase
       assert_equal 100, @sms_reply.when
     end
 
-    should "assign PENDING status " do
+    should "assign PENDING status" do
       assert_equal MessageStatus::PENDING, @sms_reply.status
     end
   end
+
+  context "SmsReply.parse method (for delivery report: pending)" do
+    should "raise ArgumentError if incorrect string passed into" do
+      e = assert_raise(ArgumentError) { SmsReply.parse("jzxhcjkvhiusdfyhg", true) }
+      assert_match(/can't parse line: jzxhcjkvhiusdfyhg/, e.message)
+    end
+  end
+
 end
