@@ -27,23 +27,24 @@ module Rumeme
         @password = cfg.password
         @use_message_id = cfg.use_message_id
         @secure = cfg.secure
-        @long_messages_strategy = cfg.long_messages_strategy
+
+        @long_messages_processor = case cfg.long_messages_strategy
+          when :send
+            lambda {|message| [message]}
+          when :cut
+            lambda {|message| [message[0..159]]}
+          when :split
+            lambda {|message| SmsInterface.split_message message}
+          else
+            lambda {|message| raise ArgumentError.new("invalid long_messages_strategy")}
+        end
+
         @replies_auto_confirm = cfg.replies_auto_confirm
       }
 
-      @response_code = -1
-      @response_message = nil
       @message_list = []
       @server_list = ["smsmaster.m4u.com.au", "smsmaster1.m4u.com.au", "smsmaster2.m4u.com.au"]
 
-      @long_messages_processor = case @long_messages_strategy
-        when :send
-          lambda {|message| [message]}
-        when :cut
-          lambda {|message| [message[0..159]]}
-        when :split
-          lambda {|message| SmsInterface.split_message message}
-      end
     end
 
     # Add a message to be sent.
@@ -115,7 +116,7 @@ module Rumeme
       text_buffer = "MESSAGES2.0\r\n#{post_string}.\r\n"
       response_message, response_code = post_data_to_server(text_buffer)
 
-      raise 'error during sending messages' if response_code != 100
+      raise BadServerResponse.new('error during sending messages') if response_code != 100
     end
 
     private
@@ -129,7 +130,7 @@ module Rumeme
 
     def self.split_message_internal message
       list =[]
-      sizes = Generator.new { |g|  g.yield 152; g.yield 155 while true }
+      sizes = Generator.new { |generator|  generator.yield 152; generator.yield 155 while true }
 
       while !message.nil? do
         head, message = head_tail_split(message, sizes.next)
@@ -142,7 +143,8 @@ module Rumeme
     def self.split_message message
       messages = split_message_internal message
       message_index = 1
-      ["#{messages[0]}...(1/#{messages.size})"].concat(messages[1..-1].map {|msg| "(#{message_index+=1}/#{messages.size})#{msg}"})
+      total_messages = messages.size
+      ["#{messages[0]}...(1/#{total_messages})"].concat(messages[1..-1].map {|msg| "(#{message_index+=1}/#{total_messages})#{msg}"})
     end
 
     def process_long_message message
@@ -172,26 +174,19 @@ module Rumeme
 
       path = '/'
 
-      begin
-        resp, data = http_connection.post(path, text_buffer, headers)
-        p resp.inspect
-        p data.inspect
-      rescue
-        p "error: #{$!}"
-        raise BadServerResponse.new("error: #{$!}")
-      end
+      resp, data = http_connection.post(path, text_buffer, headers)
+      p resp.inspect
+      p data.inspect
 
       raise BadServerResponse.new('http response code != 200') if resp.code.to_i != 200
 
       doc = Nokogiri::HTML(data)
-
       raise BadServerResponse.new('bad title') if doc.xpath('//title').text != "M4U SMSMASTER"
 
       response_message = doc.xpath('//body').text.strip
-      response_code = nil
-      if response_message =~ /^(\d+)\s+/
-        response_code = $1.to_i
-      end
+
+      response_message.match /^(\d+)\s+/
+      response_code = $1.to_i
 
       p "latest response code: #{response_code}"
       p "response: #{response_message }"
