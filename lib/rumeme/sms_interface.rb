@@ -38,14 +38,14 @@ module Rumeme
     # Add a message to be sent.
     def add_message args
       p 'in add_message '
-      phone_number = strip_invalid(args[:phone_number]) #not good idea, modifying original args, from outer scope (antlypls)
+      phone_number = self.class.strip_invalid(args[:phone_number]) #not good idea, modifying original args, from outer scope (antlypls)
       message = args[:message]
 
       raise ArgumentError.new("phone_number is empty") if phone_number.nil? || phone_number.empty?
       raise ArgumentError.new("message is empty") if message.nil? || message.empty?
 
       messages = process_long_message(message)
-      @message_list.concat(messages.map{|msg| SmsMessage.new(args.merge({:message => msg}))})
+      @message_list.concat(messages.map{|msg| SmsMessage.new(args.merge({:message => msg, :phone_number => phone_number}))})
     end
 
     # Clear all the messages from the list.
