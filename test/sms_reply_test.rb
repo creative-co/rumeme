@@ -35,6 +35,33 @@ class SmsReplyTest < Test::Unit::TestCase
     end
   end
 
+  context "SmsReply.parse method (for reply with id, phone with +)" do
+    setup do
+      @sms_reply = SmsReply.parse("39 +79270123456 35 105")
+    end
+
+    should "correctly parse message id" do
+      assert_equal 39, @sms_reply.message_id
+    end
+
+    should "correctly parse phone number" do
+      assert_equal '79270123456', @sms_reply.phone_number
+    end
+
+    should "correctly parse when" do
+      assert_equal 35, @sms_reply.when
+    end
+
+    should "correctly parse message text" do
+      assert_equal '105', @sms_reply.message
+    end
+
+    should "assign NONE status " do
+      assert_equal MessageStatus::NONE, @sms_reply.status
+    end
+  end
+
+
   context "SmsReply.parse method (for reply without id)" do
     setup do
       @sms_reply = SmsReply.parse("79270123456 100 asdfgh")

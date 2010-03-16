@@ -23,13 +23,13 @@ module Rumeme
       p "parsing line: #{line}"
 
       message_id, status, message, phone, when_ = case line
-        when /(\d+)\s(\d)\s(\d+)/
+        when /^(\d+)\s(\d)\s(\d+)/
           #process delivery report
           [$1.to_i, $2.to_i, nil, nil, $3.to_i]
-        when /(\d+)\s(\d+)\s(\d+)\s(.+)/
+        when /^(\d+)\s\+?(\d+)\s(\d+)\s(.+)/
           #process message with id
           [$1.to_i, MessageStatus::NONE, unescape($4), $2, $3.to_i]
-        when /(\d+)\s(\d+)\s(.+)/
+        when /^\+?(\d+)\s(\d+)\s(.+)/
           #process message without id
           [nil, MessageStatus::NONE, unescape($3), $1, $2.to_i]
         else
