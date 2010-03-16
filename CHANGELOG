@@ -1,3 +1,10 @@
+Version 0.1.7 - 2010-03-16
+===============================================================================
+
+antlypls (1):
+      fix parsing replies with + number format
+
+
 Version 0.1.6 - 2010-03-12
 ===============================================================================
 
@@ -52,6 +59,7 @@ antlypls (5):
       add usage section to readme file
       update gitignore
       add maintaince tasks to rake
+
 
 
 
