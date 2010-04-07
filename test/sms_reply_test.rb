@@ -61,7 +61,6 @@ class SmsReplyTest < Test::Unit::TestCase
     end
   end
 
-
   context "SmsReply.parse method (for reply without id)" do
     setup do
       @sms_reply = SmsReply.parse("79270123456 100 asdfgh")
@@ -112,5 +111,4 @@ class SmsReplyTest < Test::Unit::TestCase
       assert_match(/can't parse line: jzxhcjkvhiusdfyhg/, e.message)
     end
   end
-
 end
