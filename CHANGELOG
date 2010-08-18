@@ -1,3 +1,11 @@
+Version 0.2.0 - 2010-08-18
+===============================================================================
+
+antlypls (2):
+      minor
+      remove nokogiri usage, use regex to parse MM data
+
+
 Version 0.1.7 - 2010-03-16
 ===============================================================================
 
@@ -59,6 +67,7 @@ antlypls (5):
       add usage section to readme file
       update gitignore
       add maintaince tasks to rake
+
 
 
 

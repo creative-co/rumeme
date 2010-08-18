@@ -69,6 +69,7 @@ task :bump, :part do |t, args|
       patch += 1
     else
       abort
+      abort
   end
 
   version = [major, minor, patch].compact.join('.')
