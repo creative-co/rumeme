@@ -180,10 +180,18 @@ module Rumeme
 
       raise BadServerResponse.new('http response code != 200') if resp.code.to_i != 200
 
-      doc = Nokogiri::HTML(data)
-      raise BadServerResponse.new('bad title') if doc.xpath('//title').text != "M4U SMSMASTER"
+      #parsed_title, parsed_body = nil, nil
 
-      response_message = doc.xpath('//body').text.strip
+      if data =~ /^.+<TITLE>(.+)<\/TITLE>.+<BODY>(.+)<\/BODY>.+/m
+        parsed_title, parsed_body = $1, $2
+      else
+        raise BadServerResponse.new('not html')
+      end
+
+      #doc = Nokogiri::HTML(data)
+      raise BadServerResponse.new('bad title') if parsed_title != "M4U SMSMASTER"
+
+      response_message = parsed_body.strip
 
       response_message.match /^(\d+)\s+/
       response_code = $1.to_i
