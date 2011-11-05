@@ -76,7 +76,7 @@ task :bump, :part do |t, args|
   File.open(File.join("lib", "rumeme", "version.rb"), "w") do |f|
     f.write <<EOF
 module Rumeme
-  # VERSION = "#{version}".freeze
+  VERSION = "#{version}".freeze
 end
 EOF
   end

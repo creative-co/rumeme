@@ -1,6 +1,6 @@
 require "net/http"
 require "net/https"
-require 'rubygems'
+# require 'rubygems'
 # require 'nokogiri'
 # require 'generator'
 
