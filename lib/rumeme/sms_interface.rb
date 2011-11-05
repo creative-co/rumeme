@@ -158,13 +158,16 @@ module Rumeme
       "+#{phone.gsub(/[^0-9]/, '')}"
     end
 
+    def message_id_sign
+      @use_message_id ? '#' :''
+    end
+    
     def create_login_string # can be calculate once at initialization
-      message_id_sign = @use_message_id? '#' :''
       "m4u\r\nUSER=#{@username}#{message_id_sign}\r\nPASSWORD=#{@password}\r\nVER=PHP1.0\r\n"
     end
 
-    def post_data_to_server data
-      p 'post_data_to_server'
+    def post_data_to_server(data)
+      # p 'post_data_to_server'
 
       http_connection = open_server_connection(@server_list[0])
       text_buffer = create_login_string + data
@@ -174,11 +177,11 @@ module Rumeme
 
       path = '/'
 
-      resp, data = http_connection.post(path, text_buffer, headers)
-      p resp.inspect
+      response, data = http_connection.post(path, text_buffer, headers)
+      p response.inspect
       p data.inspect
 
-      raise BadServerResponse.new('http response code != 200') if resp.code.to_i != 200
+      raise BadServerResponse.new('http response code != 200') if response.code.to_i != 200
 
       #parsed_title, parsed_body = nil, nil
 
