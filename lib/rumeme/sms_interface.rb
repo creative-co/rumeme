@@ -177,7 +177,9 @@ module Rumeme
 
       response, data = http_connection.post(path, text_buffer, headers)
       p "response: #{response.inspect}"
+      p "response.body: #{response.body.inspect}"
       p "data: #{data.inspect}"
+      p "response.status: #{response.status}"
 
       raise BadServerResponse.new('http response code != 200') unless response.code.to_i == 200
 
