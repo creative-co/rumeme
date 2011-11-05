@@ -175,13 +175,13 @@ module Rumeme
 
       path = '/'
 
-      response, data = http_connection.post(path, text_buffer, headers)
-      p "response: #{response.inspect}"
-      p "response.body: #{response.body.inspect}"
-      p "data: #{data.inspect}"
-      p "response.status: #{response.status}"
-
+      response = http_connection.post(path, text_buffer, headers)
+      # p "response: #{response.inspect}"
+      # p "response.body: #{response.body.inspect}"
+      # p "response.code: #{response.code}"
       raise BadServerResponse.new('http response code != 200') unless response.code.to_i == 200
+
+      data = response.body
 
       #parsed_title, parsed_body = nil, nil
 
