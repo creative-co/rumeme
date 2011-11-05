@@ -4,6 +4,7 @@ require "rumeme/validity_period"
 require "rumeme/sms_message"
 require "rumeme/sms_reply"
 require "rumeme/sms_interface"
+require "rumeme/generator" # Ruby's built-in generator class was removed in 1.9
 
 module Rumeme
   class << self
