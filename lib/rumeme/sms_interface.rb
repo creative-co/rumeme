@@ -1,8 +1,8 @@
 require "net/http"
 require "net/https"
 require 'rubygems'
-require 'nokogiri'
-require 'generator'
+# require 'nokogiri'
+# require 'generator'
 
 module Rumeme
 
@@ -193,7 +193,7 @@ module Rumeme
 
       response_message = parsed_body.strip
 
-      response_message.match /^(\d+)\s+/
+      response_message.match(/^(\d+)\s+/)
       response_code = $1.to_i
 
       p "latest response code: #{response_code}"
