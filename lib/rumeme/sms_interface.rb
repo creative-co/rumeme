@@ -108,14 +108,16 @@ module Rumeme
       end
     end
 
-    # Sends all the messages that have been added with the
-    # add_message command.
+    # Sends all the messages that have been added with the add_message command.
     def send_messages
       post_string = @message_list.map(&:post_string).join
       text_buffer = "MESSAGES2.0\r\n#{post_string}.\r\n"
       response_message, response_code = post_data_to_server(text_buffer)
+      response_code == 100
+    end
 
-      raise BadServerResponse.new('error during sending messages') unless response_code == 100
+    def send_messages!
+      raise BadServerResponse.new('error during sending messages') unless send_messages
     end
 
     private
