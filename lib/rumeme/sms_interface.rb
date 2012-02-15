@@ -174,7 +174,9 @@ module Rumeme
 
       path = '/'
 
-      resp, data = http_connection.post(path, text_buffer, headers)
+      resp = http_connection.post(path, text_buffer, headers)
+      data = resp.body
+      
       p resp.inspect
       p data.inspect
 
