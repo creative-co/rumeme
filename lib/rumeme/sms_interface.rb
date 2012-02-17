@@ -1,8 +1,5 @@
 require "net/http"
 require "net/https"
-require 'rubygems'
-require 'nokogiri'
-require 'generator'
 
 module Rumeme
 
@@ -43,7 +40,7 @@ module Rumeme
       }
 
       @message_list = []
-      @server_list = ["smsmaster.m4u.com.au", "smsmaster1.m4u.com.au", "smsmaster2.m4u.com.au"]
+      @server_list = %W(smsmaster.m4u.com.au smsmaster1.m4u.com.au smsmaster2.m4u.com.au)
 
     end
 
@@ -87,7 +84,7 @@ module Rumeme
       messages = response_message.split("\r\n")[1..-2].map{|message_line| SmsReply.parse(message_line)} # check @use_message_id
       confirm_replies_received if @replies_auto_confirm && messages.size > 0
 
-      return messages
+      messages
     end
 
     # sends confirmation to server
@@ -103,7 +100,7 @@ module Rumeme
         if response_code != 100
           raise BadServerResponse.new 'M4U code is not 100'
         end
-        return $2.to_i
+        $2.to_i
       else
         raise BadServerResponse.new "cant parse response: #{response_message}"
       end
@@ -132,7 +129,7 @@ module Rumeme
       list =[]
       sizes = Generator.new { |generator|  generator.yield 152; generator.yield 155 while true }
 
-      while !message.nil? do
+      until message.nil? do
         head, message = head_tail_split(message, sizes.next)
         list << head
       end
@@ -164,23 +161,22 @@ module Rumeme
     end
 
     def post_data_to_server data
-      p 'post_data_to_server'
+      puts 'post_data_to_server'
 
       http_connection = open_server_connection(@server_list[0])
       text_buffer = create_login_string + data
 
-      p "buffer: #{text_buffer}"
+      puts "buffer: #{text_buffer}"
       headers = {'Content-Length' => text_buffer.length.to_s}
 
       path = '/'
 
-      resp, data = http_connection.post(path, text_buffer, headers)
-      p resp.inspect
-      p data.inspect
+      resp = http_connection.post(path, text_buffer, headers)
+      data = resp.body
+      p resp
+      p data
 
       raise BadServerResponse.new('http response code != 200') if resp.code.to_i != 200
-
-      #parsed_title, parsed_body = nil, nil
 
       if data =~ /^.+<TITLE>(.+)<\/TITLE>.+<BODY>(.+)<\/BODY>.+/m
         parsed_title, parsed_body = $1, $2
@@ -188,7 +184,6 @@ module Rumeme
         raise BadServerResponse.new('not html')
       end
 
-      #doc = Nokogiri::HTML(data)
       raise BadServerResponse.new('bad title') if parsed_title != "M4U SMSMASTER"
 
       response_message = parsed_body.strip
@@ -196,8 +191,8 @@ module Rumeme
       response_message.match /^(\d+)\s+/
       response_code = $1.to_i
 
-      p "latest response code: #{response_code}"
-      p "response: #{response_message }"
+      puts "latest response code: #{response_code}"
+      puts "response: #{response_message }"
 
       [response_message, response_code]
     end

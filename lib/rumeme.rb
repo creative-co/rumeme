@@ -4,6 +4,7 @@ require "rumeme/validity_period"
 require "rumeme/sms_message"
 require "rumeme/sms_reply"
 require "rumeme/sms_interface"
+require "rumeme/generator"
 
 module Rumeme
   class << self
@@ -11,7 +12,7 @@ module Rumeme
 
     def configure
       @configuration ||= Configuration.new
-      yield(@configuration)
+      yield @configuration
       
       raise 'unknown long_messages_strategy' unless [:split, :send, :cut].include?(@configuration.long_messages_strategy)
     end
