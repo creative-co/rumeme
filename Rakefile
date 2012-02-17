@@ -59,7 +59,7 @@ Version #{version} - #{Date.today}
 EOF
   end
 
-  editor = ENV["EDITOR"] || 'kate'
+  editor = ENV["EDITOR"] || 'mvim'
 
   system ["#{editor} #{file}",
         "git commit -aqm '#{message}'",

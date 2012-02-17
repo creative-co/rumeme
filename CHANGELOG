@@ -1,3 +1,17 @@
+Version 0.3.0 - 2012-02-17
+===============================================================================
+
+Anatoliy Plastinin (1):
+      some fixes for ruby 1.9.3 support
+
+
+Version 0.3.0 - 2012-02-17
+===============================================================================
+
+Anatoliy Plastinin (1):
+      some fixes for ruby 1.9.3 support
+
+
 Version 0.2.0 - 2010-08-18
 ===============================================================================
 
@@ -67,6 +81,8 @@ antlypls (5):
       add usage section to readme file
       update gitignore
       add maintaince tasks to rake
+
+
 
 
 
