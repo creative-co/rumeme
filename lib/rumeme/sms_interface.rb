@@ -127,7 +127,7 @@ module Rumeme
 
     def self.split_message_internal message
       list =[]
-      sizes = Generator.new { |generator|  generator.yield 152; generator.yield 155 while true }
+      sizes = Enumerator.new {|yielder| yielder << 152; yielder << 155 while true}
 
       until message.nil? do
         head, message = head_tail_split(message, sizes.next)
@@ -157,7 +157,7 @@ module Rumeme
 
     def create_login_string # can be calculate once at initialization
       message_id_sign = @use_message_id? '#' :''
-      "m4u\r\nUSER=#{@username}#{message_id_sign}\r\nPASSWORD=#{@password}\r\nVER=PHP1.0\r\n"
+      "m4u\r\nUSER=#@username#{message_id_sign}\r\nPASSWORD=#@password\r\nVER=PHP1.0\r\n"
     end
 
     def post_data_to_server data
