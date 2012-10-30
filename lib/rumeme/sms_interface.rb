@@ -1,8 +1,5 @@
 require "net/http"
 require "net/https"
-# require 'rubygems'
-# require 'nokogiri'
-# require 'generator'
 
 module Rumeme
 
@@ -43,12 +40,12 @@ module Rumeme
       }
 
       @message_list = []
-      @server_list = ["smsmaster.m4u.com.au", "smsmaster1.m4u.com.au", "smsmaster2.m4u.com.au"]
+      @server_list = %W(smsmaster.m4u.com.au smsmaster1.m4u.com.au smsmaster2.m4u.com.au)
 
     end
 
     # Add a message to be sent.
-    def add_message(args)
+    def add_message args
       phone_number = self.class.strip_invalid(args[:phone_number]) #not good idea, modifying original args, from outer scope (antlypls)
       message = args[:message]
 
@@ -66,6 +63,7 @@ module Rumeme
 
     def open_server_connection server
       port, use_ssl = @secure ? [443, true] : [80, false]
+
       http_connection =  Net::HTTP.new(server, port)
       http_connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
       http_connection.use_ssl = use_ssl
@@ -86,7 +84,7 @@ module Rumeme
       messages = response_message.split("\r\n")[1..-2].map{|message_line| SmsReply.parse(message_line)} # check @use_message_id
       confirm_replies_received if @replies_auto_confirm && messages.size > 0
 
-      return messages
+      messages
     end
 
     # sends confirmation to server
@@ -102,13 +100,14 @@ module Rumeme
         if response_code != 100
           raise BadServerResponse.new 'M4U code is not 100'
         end
-        return $2.to_i
+        $2.to_i
       else
         raise BadServerResponse.new "cant parse response: #{response_message}"
       end
     end
 
     # Sends all the messages that have been added with the add_message command.
+    # returns boolean. true if successful, false if not.
     def send_messages
       post_string = @message_list.map(&:post_string).join
       text_buffer = "MESSAGES2.0\r\n#{post_string}.\r\n"
@@ -116,13 +115,15 @@ module Rumeme
       response_code == 100
     end
 
+    # Sends all the messages that have been added with the add_message command.
+    # Raises exception if not successful
     def send_messages!
       raise BadServerResponse.new('error during sending messages') unless send_messages
     end
 
     private
 
-    def self.head_tail_split(message, max_len)
+    def self.head_tail_split message, max_len
       return [message, nil] if message.length < max_len
       pattern = /\s\.,!;:-\)/
       index = message[0..max_len].rindex(pattern) || max_len
@@ -131,9 +132,9 @@ module Rumeme
 
     def self.split_message_internal message
       list =[]
-      sizes = Generator.new { |generator|  generator.yield 152; generator.yield 155 while true }
+      sizes = Enumerator.new {|yielder| yielder << 152; yielder << 155 while true}
 
-      while !message.nil? do
+      until message.nil? do
         head, message = head_tail_split(message, sizes.next)
         list << head
       end
@@ -141,7 +142,7 @@ module Rumeme
       list
     end
 
-    def self.split_message(message)
+    def self.split_message message
       messages = split_message_internal message
       message_index = 1
       total_messages = messages.size
@@ -154,8 +155,8 @@ module Rumeme
     end
 
     # Strip invalid characters from the phone number.
-    def self.strip_invalid(phone)
-      "+#{phone.gsub(/[^0-9]/, '')}" unless phone.nil?
+    def self.strip_invalid phone
+      phone.nil? ? "+#{phone.gsub(/[^0-9]/, '')}" : nil
     end
 
     def message_id_sign
@@ -166,26 +167,23 @@ module Rumeme
       "m4u\r\nUSER=#{@username}#{message_id_sign}\r\nPASSWORD=#{@password}\r\nVER=PHP1.0\r\n"
     end
 
-    def post_data_to_server(data)
-      # p 'post_data_to_server'
+    def post_data_to_server data
+      puts 'post_data_to_server'
 
       http_connection = open_server_connection(@server_list[0])
       text_buffer = create_login_string + data
 
-      p "buffer: #{text_buffer}"
+      puts "buffer: #{text_buffer}"
       headers = {'Content-Length' => text_buffer.length.to_s}
 
       path = '/'
 
-      response = http_connection.post(path, text_buffer, headers)
-      # p "response: #{response.inspect}"
-      # p "response.body: #{response.body.inspect}"
-      # p "response.code: #{response.code}"
+      resp = http_connection.post(path, text_buffer, headers)
+      data = resp.body
+      p resp
+      p data
+      
       raise BadServerResponse.new('http response code != 200') unless response.code.to_i == 200
-
-      data = response.body
-
-      #parsed_title, parsed_body = nil, nil
 
       if data =~ /^.+<TITLE>(.+)<\/TITLE>.+<BODY>(.+)<\/BODY>.+/m
         parsed_title, parsed_body = $1, $2
@@ -193,16 +191,15 @@ module Rumeme
         raise BadServerResponse.new('not html')
       end
 
-      #doc = Nokogiri::HTML(data)
       raise BadServerResponse.new('bad title') unless parsed_title == "M4U SMSMASTER"
 
       response_message = parsed_body.strip
 
-      response_message.match(/^(\d+)\s+/)
+      response_message.match /^(\d+)\s+/
       response_code = $1.to_i
 
-      p "latest response code: #{response_code}"
-      p "response: #{response_message }"
+      puts "latest response code: #{response_code}"
+      puts "response: #{response_message }"
 
       [response_message, response_code]
     end
