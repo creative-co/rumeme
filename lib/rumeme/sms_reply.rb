@@ -1,7 +1,6 @@
 module Rumeme
   # This class represents an SMS reply.
   class SmsReply
-    #attr_accessor :phone_number, :message, :message_id, :when, :status
     attr_reader :phone_number, :message, :message_id, :when, :status
 
     #Constructor.
