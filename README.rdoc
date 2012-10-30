@@ -9,7 +9,7 @@ Just execute
  gem install rumeme
 
 == Usage
-Firs of all add Rumeme initialization
+First, add Rumeme initialization
 
  Rumeme.configure do |config|
    config.username = 'xxx'
@@ -38,10 +38,12 @@ Where xxxxxxxxxxx is phone number.
 = To Do
 * Refactoring to make api more rubyish,
 * Add unit tests,
-* Remove dependency to nokogiri
 
 = Credits
-RuMeMe is maintained by antlypls, and is funded by Programmable, LLC.
+RuMeMe is maintained by Anatoliy Plastinin, and is funded by {Cloud Castle, LLC}[http://cloudcastlegroup.com/].
+
+= Contributors
+Stan Carver II
 
 = License
 Still looking for license. But the software is provided "as is", without warranty of any kind.

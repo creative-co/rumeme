@@ -123,40 +123,42 @@ module Rumeme
 
     private
 
-    def self.head_tail_split message, max_len
-      return [message, nil] if message.length < max_len
-      pattern = /\s\.,!;:-\)/
-      index = message[0..max_len].rindex(pattern) || max_len
-      [message[0..index], message[index+1 .. -1]]
-    end
-
-    def self.split_message_internal message
-      list =[]
-      sizes = Enumerator.new {|yielder| yielder << 152; yielder << 155 while true}
-
-      until message.nil? do
-        head, message = head_tail_split(message, sizes.next)
-        list << head
+    class << self
+      def head_tail_split message, max_len
+        return [message, nil] if message.length < max_len
+        pattern = /\s\.,!;:-\)/
+        index = message[0..max_len].rindex(pattern) || max_len
+        [message[0..index], message[index+1 .. -1]]
       end
 
-      list
-    end
+      def split_message_internal message
+        list =[]
+        sizes = Enumerator.new {|yielder| yielder << 152; yielder << 155 while true}
 
-    def self.split_message message
-      messages = split_message_internal message
-      message_index = 1
-      total_messages = messages.size
-      ["#{messages[0]}...(1/#{total_messages})"].concat(messages[1..-1].map {|msg| "(#{message_index+=1}/#{total_messages})#{msg}"})
-    end
+        until message.nil? do
+          head, message = head_tail_split(message, sizes.next)
+          list << head
+        end
 
+        list
+      end
+
+      def split_message message
+        messages = split_message_internal message
+        message_index = 1
+        total_messages = messages.size
+        ["#{messages[0]}...(1/#{total_messages})"].concat(messages[1..-1].map {|msg| "(#{message_index+=1}/#{total_messages})#{msg}"})
+      end
+
+      # Strip invalid characters from the phone number.
+      def strip_invalid phone
+        phone.nil? ? "+#{phone.gsub(/[^0-9]/, '')}" : nil
+      end
+    end
+    
     def process_long_message message
       return [message] if message.length <= 160
       @long_messages_processor.call(message)
-    end
-
-    # Strip invalid characters from the phone number.
-    def self.strip_invalid phone
-      phone.nil? ? "+#{phone.gsub(/[^0-9]/, '')}" : nil
     end
 
     def message_id_sign
