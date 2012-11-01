@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.name = "rumeme"
   s.version = Rumeme::VERSION
 
-  s.authors     = ["Anatoliy Plastinin, Cloud Castle LLC"]
-  s.email       = ["antlypls@gmail.com"]
+  s.authors     = ["Anatoliy Plastinin, Cloud Castle LLC", "Stan Carver II, A1 Web Consulting"]
+  s.email       = ["antlypls@gmail.com", "stan@a1webconsulting.com"]
 
   s.homepage = "http://github.com/programmable/rumeme"
   s.summary = "Ruby SDK for Message Media SMS Gateway API"

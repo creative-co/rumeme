@@ -1,3 +1,15 @@
+Version 0.4.0 (pending approval) - 2012-10-30
+===============================================================================
+
+Stan Carver II (6):
+      changed send_messages to return true or false instead of raising an error
+			added send_messages! to raise an error
+			change inverted if not conditionals to unless
+			refactored message_id_sign out of create_login_string
+			consolidated self references with a << self block
+			added my name to the credits as a contributor
+
+
 Version 0.3.0 - 2012-02-17
 ===============================================================================
 
