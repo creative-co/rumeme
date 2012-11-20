@@ -12,7 +12,7 @@ module Rumeme
     def configure
       @configuration ||= Configuration.new
       yield @configuration
-      
+
       raise 'unknown long_messages_strategy' unless [:split, :send, :cut].include?(@configuration.long_messages_strategy)
     end
   end

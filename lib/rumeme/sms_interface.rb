@@ -155,7 +155,7 @@ module Rumeme
         phone.nil? ? nil : "+#{phone.gsub(/[^0-9]/, '')}"
       end
     end
-    
+
     def process_long_message message
       return [message] if message.length <= 160
       @long_messages_processor.call(message)
@@ -164,27 +164,22 @@ module Rumeme
     def message_id_sign
       @use_message_id ? '#' : ''
     end
-    
+
     def create_login_string # can be calculate once at initialization
       "m4u\r\nUSER=#{@username}#{message_id_sign}\r\nPASSWORD=#{@password}\r\nVER=PHP1.0\r\n"
     end
 
     def post_data_to_server data
-      # puts 'post_data_to_server'
-
       http_connection = open_server_connection(@server_list[0])
       text_buffer = create_login_string + data
 
-      # puts "buffer: #{text_buffer}"
       headers = {'Content-Length' => text_buffer.length.to_s}
 
       path = '/'
 
       resp = http_connection.post(path, text_buffer, headers)
       data = resp.body
-      # p resp
-      # p data
-      
+
       raise BadServerResponse.new('http response code != 200') unless resp.code.to_i == 200
 
       if data =~ /^.+<TITLE>(.+)<\/TITLE>.+<BODY>(.+)<\/BODY>.+/m
@@ -199,9 +194,6 @@ module Rumeme
 
       response_message.match /^(\d+)\s+/
       response_code = $1.to_i
-
-      # puts "latest response code: #{response_code}"
-      # puts "response: #{response_message }"
 
       [response_message, response_code]
     end
