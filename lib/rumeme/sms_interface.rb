@@ -152,7 +152,7 @@ module Rumeme
 
       # Strip invalid characters from the phone number.
       def strip_invalid phone
-        phone.nil? ? "+#{phone.gsub(/[^0-9]/, '')}" : nil
+        phone.nil? ? nil : "+#{phone.gsub(/[^0-9]/, '')}"
       end
     end
     
@@ -170,22 +170,22 @@ module Rumeme
     end
 
     def post_data_to_server data
-      puts 'post_data_to_server'
+      # puts 'post_data_to_server'
 
       http_connection = open_server_connection(@server_list[0])
       text_buffer = create_login_string + data
 
-      puts "buffer: #{text_buffer}"
+      # puts "buffer: #{text_buffer}"
       headers = {'Content-Length' => text_buffer.length.to_s}
 
       path = '/'
 
       resp = http_connection.post(path, text_buffer, headers)
       data = resp.body
-      p resp
-      p data
+      # p resp
+      # p data
       
-      raise BadServerResponse.new('http response code != 200') unless response.code.to_i == 200
+      raise BadServerResponse.new('http response code != 200') unless resp.code.to_i == 200
 
       if data =~ /^.+<TITLE>(.+)<\/TITLE>.+<BODY>(.+)<\/BODY>.+/m
         parsed_title, parsed_body = $1, $2
@@ -200,8 +200,8 @@ module Rumeme
       response_message.match /^(\d+)\s+/
       response_code = $1.to_i
 
-      puts "latest response code: #{response_code}"
-      puts "response: #{response_message }"
+      # puts "latest response code: #{response_code}"
+      # puts "response: #{response_message }"
 
       [response_message, response_code]
     end
