@@ -180,14 +180,12 @@ module Rumeme
 
       path = '/'
 
-      resp = http_connection.post(path, text_buffer, headers)
-      data = resp.body
-      p resp
-      p data
+      response = http_connection.post(path, text_buffer, headers)
+      # p response
       
       raise BadServerResponse.new('http response code != 200') unless response.code.to_i == 200
 
-      if data =~ /^.+<TITLE>(.+)<\/TITLE>.+<BODY>(.+)<\/BODY>.+/m
+      if response.body =~ /^.+<TITLE>(.+)<\/TITLE>.+<BODY>(.+)<\/BODY>.+/m
         parsed_title, parsed_body = $1, $2
       else
         raise BadServerResponse.new('not html')
