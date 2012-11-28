@@ -11,7 +11,7 @@ end
 
 desc "Bumps the version by a minor or patch version, depending on what was passed in."
 task :bump, :part do |t, args|
-  if Rumeme::VERSION  =~ /^(\d+)\.(\d+)\.(\d+)(?:\.(.*?))?$/
+  if Rumeme::VERSION =~ /^(\d+)\.(\d+)\.(\d+)(?:\.(.*?))?$/
     major = $1.to_i
     minor = $2.to_i
     patch = $3.to_i
