@@ -20,7 +20,7 @@ module Rumeme
       # Or if delivery receipt: messageID messageStatus when /(\d+)\s(\d)\s(\d+)/
       # current implementation ignores use_message_id setting (as original code)
       def parse line
-        p "parsing line: #{line}"
+        # p "parsing line: #{line}"
 
         message_id, status, message, phone, when_ = case line
           when /^(\d+)\s(\d)\s(\d+)/
