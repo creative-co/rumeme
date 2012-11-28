@@ -11,7 +11,7 @@ module Rumeme
     class << self
       # Unescape any escaped characters in the string.
       def unescape line
-        line.nil? ? nil : line.gsub('\n', "\n").gsub('\r', "\r").gsub('\\\\', "\\")
+        line.gsub('\n', "\n").gsub('\r', "\r").gsub('\\\\', "\\") if line
       end
 
       # Parse a reply from a string.
