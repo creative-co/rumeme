@@ -152,7 +152,7 @@ module Rumeme
 
       # Strip invalid characters from the phone number.
       def strip_invalid phone
-        phone.nil? ? "+#{phone.gsub(/[^0-9]/, '')}" : nil
+        "+#{phone.gsub(/[^0-9]/, '')}" if phone
       end
     end
     
