@@ -1,4 +1,10 @@
 = RuMeMe
+
+<p>
+ <a href="http://travis-ci.org/statique/rumeme"><img src="https://secure.travis-ci.org/statique/rumeme.png" alt="Build Status" style="max-width:100%;"></a> 
+ <a href="https://gemnasium.com/statique/rumeme"><img src="https://gemnasium.com/statique/rumeme.png" alt="Dependency Status" style="max-width:100%;"></a>
+</p>
+
 Ruby SDK for Message Media SMS Gateway API.
 Since Message Media doesn't provide any ruby projects support, we decided to port it from available SDKs (mainly from PHP SDK; and some .NET usage). 
 For more information checkout {Message Media SMS APIs}[http://www.message-media.com/sms-gateway.html].
