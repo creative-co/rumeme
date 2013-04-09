@@ -170,12 +170,12 @@ module Rumeme
     end
 
     def post_data_to_server data
-      puts 'post_data_to_server'
+      # puts 'post_data_to_server'
 
       http_connection = open_server_connection(@server_list[0])
       text_buffer = create_login_string + data
 
-      puts "buffer: #{text_buffer}"
+      # puts "buffer: #{text_buffer}"
       headers = {'Content-Length' => text_buffer.length.to_s}
 
       path = '/'
@@ -198,8 +198,8 @@ module Rumeme
       response_message.match /^(\d+)\s+/
       response_code = $1.to_i
 
-      puts "latest response code: #{response_code}"
-      puts "response: #{response_message }"
+      # puts "latest response code: #{response_code}"
+      # puts "response: #{response_message }"
 
       [response_message, response_code]
     end
