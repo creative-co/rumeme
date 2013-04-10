@@ -11,7 +11,7 @@ module Rumeme
     # possible values
     # :send - sends messages as is without any modification
     # :split - splits messages into small (less than 160 ch) messages
-    # :cut - sends only first 160 symbols 
+    # :cut - sends only first 160 symbols
     attr_accessor :long_messages_strategy
 
     def initialize

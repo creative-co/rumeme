@@ -155,7 +155,7 @@ module Rumeme
         "+#{phone.gsub(/[^0-9]/, '')}" if phone
       end
     end
-    
+
     def process_long_message message
       return [message] if message.length <= 160
       @long_messages_processor.call(message)
@@ -164,7 +164,7 @@ module Rumeme
     def message_id_sign
       @use_message_id ? '#' : ''
     end
-    
+
     def create_login_string # can be calculate once at initialization
       "m4u\r\nUSER=#{@username}#{message_id_sign}\r\nPASSWORD=#{@password}\r\nVER=PHP1.0\r\n"
     end
