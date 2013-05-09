@@ -21,6 +21,6 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.require_paths = %W(lib)
-  s.extra_rdoc_files = ["README.rdoc"]
-  s.rdoc_options = ["--line-numbers", "--main", "README.rdoc"]
+  s.extra_rdoc_files = ["README.md"]
+  s.rdoc_options = ["--line-numbers", "--main", "README.md"]
 end
