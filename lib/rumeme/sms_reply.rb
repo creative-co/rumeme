@@ -11,7 +11,7 @@ module Rumeme
     class << self
       # Unescape any escaped characters in the string.
       def unescape line
-        line.nil? ? nil : line.gsub('\n', "\n").gsub('\r', "\r").gsub('\\\\', "\\")
+        line.gsub('\n', "\n").gsub('\r', "\r").gsub('\\\\', "\\") if line
       end
 
       # Parse a reply from a string.
@@ -20,7 +20,7 @@ module Rumeme
       # Or if delivery receipt: messageID messageStatus when /(\d+)\s(\d)\s(\d+)/
       # current implementation ignores use_message_id setting (as original code)
       def parse line
-        p "parsing line: #{line}"
+        # p "parsing line: #{line}"
 
         message_id, status, message, phone, when_ = case line
           when /^(\d+)\s(\d)\s(\d+)/
