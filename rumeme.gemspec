@@ -16,14 +16,11 @@ Gem::Specification.new do |s|
   s.summary = "Ruby SDK for Message Media SMS Gateway API"
   s.description = "Ruby SDK for Message Media SMS Gateway API"
 
-
   s.add_development_dependency 'shoulda'
-
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.require_paths = %W(lib)
   s.extra_rdoc_files = ["README.rdoc"]
   s.rdoc_options = ["--line-numbers", "--main", "README.rdoc"]
-
 end
