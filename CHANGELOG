@@ -1,3 +1,26 @@
+Version 0.4.1 - 2013-05-09
+===============================================================================
+
+Anatoliy Plastinin (11):
+      Merge pull request #4 from rafaelmagu/master
+      remove commented logging
+      update readme
+      Merge PR #5 into master
+      clenaup
+      update gitignore
+      small code readability changes
+      other small fixes
+
+Rafael Fonseca (1):
+      Commented out some debugging output. Fixed return value order in strip_invalid.
+
+Stan Carver (15):
+      corrected strip_invalid method-logic test for nil was backwards.
+      simplified unescape method for readibility.
+      corrected changed resp variable name to response. corrected pass by reference change to data variable. removed unneeded print statements.
+      added more test coverage.
+
+
 Version 0.4.0 - 2012-10-30
 ===============================================================================
 
@@ -86,3 +109,4 @@ antlypls (5):
       add usage section to readme file
       update gitignore
       add maintaince tasks to rake
+
