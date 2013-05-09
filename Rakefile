@@ -2,6 +2,8 @@ require 'rake'
 require 'rake/testtask'
 require 'bundler/gem_tasks'
 
+require 'date'
+
 desc 'Test the rumeme gem'
 Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
