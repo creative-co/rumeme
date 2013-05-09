@@ -64,7 +64,7 @@ module Rumeme
     def open_server_connection server
       port, use_ssl = @secure ? [443, true] : [80, false]
 
-      http_connection =  Net::HTTP.new(server, port)
+      http_connection = Net::HTTP.new(server, port)
       http_connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
       http_connection.use_ssl = use_ssl
       http_connection
@@ -132,7 +132,7 @@ module Rumeme
       end
 
       def split_message_internal message
-        list =[]
+        list = []
         sizes = Enumerator.new {|yielder| yielder << 152; yielder << 155 while true}
 
         until message.nil? do
@@ -192,7 +192,7 @@ module Rumeme
 
       response_message = parsed_body.strip
 
-      response_message.match /^(\d+)\s+/
+      response_message.match(/^(\d+)\s+/)
       response_code = $1.to_i
 
       [response_message, response_code]
