@@ -121,7 +121,17 @@ module Rumeme
       raise BadServerResponse.new('error during sending messages') unless send_messages
     end
 
+    def last_response_code
+      response_code
+    end
+
+    def last_response_message
+      response_message
+    end
+
     private
+
+    attr_accessor :response_code, :response_message
 
     class << self
       def head_tail_split message, max_len
