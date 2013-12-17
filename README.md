@@ -26,8 +26,7 @@ Rumeme.configure do |config|
   config.password = 'yyy'
   config.use_message_id = true
   config.secure = true
- config.allow_splitting = false
-  config.allow_long_messages = true
+  config.long_messages_strategy = :send # :send, :cut or :split
 end
 ```
 
@@ -35,7 +34,7 @@ Where xxx and yyy is your username and password consequently.
 Then you can use SmsInterface class to add and send messages.
 
 ```ruby
-si = SmsInterface.new
+si = Rumeme::SmsInterface.new
 
 si.add_message :phone_number => 'xxxxxxxxxxx', :message => 'Message text 1'
 si.add_message :phone_number => 'xxxxxxxxxxx', :message => 'Message text 2'
