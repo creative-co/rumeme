@@ -7,6 +7,8 @@ module Rumeme
   class SmsInterface
     class BadServerResponse < StandardError; end
 
+    attr_reader :last_response_message, :last_response_code
+
     # allow_splitting, allow_long_messages, response_code, response_message, username, password, use_message_id, secure, http_connection, server_list, message_list,
     # http_proxy, http_proxy_port, http_proxy_auth, https_proxy, https_proxy_port, https_proxy_auth, text_buffer,
 
@@ -195,6 +197,8 @@ module Rumeme
       response_message.match(/^(\d+)\s+/)
       response_code = $1.to_i
 
+      @last_response_message = response_message
+      @last_response_code = response_code
       [response_message, response_code]
     end
   end
